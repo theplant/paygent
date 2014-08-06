@@ -1,5 +1,5 @@
 require 'curb'
-require 'iconv'
+require 'iconv' if RUBY_VERSION < '1.9'
 
 module Paygent
   class Request
@@ -66,7 +66,7 @@ module Paygent
       c.http_post()
 
       self.response_code = c.response_code
-      self.body_str      = Iconv.conv('utf-8','Windows-31J', c.body_str)
+      self.body_str      = convert_str(c.body_str)
       self.header_str    = c.header_str
       self.request       = c
 
@@ -98,6 +98,16 @@ module Paygent
       hash = {}
       body_str.scan(/\n(\w+)=(<!DOCTYPE.*?<\/HTML>|.*?)\r/m) { hash.update($1 => $2) }
       hash.with_indifferent_access
+    end
+
+    private
+
+    def convert_str(str)
+      if RUBY_VERSION < '1.9'
+        Iconv.conv('utf-8','Windows-31J', str)
+      else
+        str.force_encoding('utf-8')
+      end
     end
   end
 end
