@@ -1,5 +1,5 @@
 require 'curb'
-require 'iconv' if RUBY_VERSION < '1.9'
+require 'iconv' if RUBY_VERSION.to_f < 1.9
 
 module Paygent
   class Request
@@ -103,7 +103,7 @@ module Paygent
     private
 
     def convert_str(str)
-      if RUBY_VERSION < '1.9'
+      if RUBY_VERSION.to_f < 1.9
         Iconv.conv('utf-8','Windows-31J', str)
       else
         str.force_encoding('utf-8')
