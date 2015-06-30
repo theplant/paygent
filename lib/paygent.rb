@@ -1,13 +1,18 @@
 module Paygent
   class << self
     attr_accessor :client_file_path, :ca_file_path, :log_output_path, :debug_flg, :timeout, :select_max_cnt, :cert_password
-    attr_accessor :merchant_id, :default_id, :default_password, :telegram_version, :verbose
+    attr_accessor :merchant_id, :default_id, :default_password, :telegram_version, :verbose, :default_id_for_3d, :default_password_for_3d, :client_file_path_for_3d, :merchant_id_for_3d
   end
 
   Paygent.merchant_id      = ""
   Paygent.default_id       = ""
   Paygent.default_password = ""
   Paygent.telegram_version = "1.0"
+
+  Paygent.default_id_for_3d       = ""
+  Paygent.default_password_for_3d = ""
+  Paygent.client_file_path_for_3d = ""
+  Paygent.merchant_id_for_3d      = ""
 
   Paygent.client_file_path = "config/paygent/client_mdev_20090123.pem"
   Paygent.ca_file_path     = "config/paygent/curl-ca-bundle.crt"

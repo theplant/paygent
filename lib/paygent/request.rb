@@ -8,6 +8,13 @@ module Paygent
     def initialize(option={})
       self._params ||= {}
       self._params.update(option)
+      if option[:force_3d]
+        self._params.update({
+          :merchant_id => Paygent.merchant_id_for_3d,
+          :connect_id => Paygent.default_id_for_3d,
+          :connect_password => Paygent.default_password_for_3d
+        })
+      end
       self.process_id = (rand * 100000000).to_i
       self
     end
@@ -52,7 +59,7 @@ module Paygent
       url = "#{base_url}?#{params_str}"
       c = Curl::Easy.new(url)
       c.cacert          = Paygent.ca_file_path
-      c.cert            = Paygent.client_file_path
+      c.cert            = params[:force_3d] ? Paygent.client_file_path_for_3d : Paygent.client_file_path
       c.certpassword    = Paygent.cert_password
       c.connect_timeout = Paygent.timeout
       c.verbose         = Paygent.verbose
