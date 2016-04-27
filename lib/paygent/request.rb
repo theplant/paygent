@@ -50,34 +50,38 @@ module Paygent
     def params_str
       params.map{|f,k| "#{Curl::Easy.new.escape(f)}=#{Curl::Easy.new.escape(k)}"}.join('&')
     end
+    
+    def params_fields
+      params.map{|f,k| Curl::PostField.content(Curl::Easy.new.escape(f), Curl::Easy.new.escape(k)) }
+    end
+
 
     def post
       telegram_kind = params[:telegram_kind]
       base_url = Paygent::Service.get_url_with_telegram_kind(telegram_kind)
       log("Can't found related paygent URL with #{telegram_kind}") unless base_url
 
-      url = "#{base_url}?#{params_str}"
-      c = Curl::Easy.new(url)
-      c.cacert          = Paygent.ca_file_path
-      c.cert            = params[:force_3d] ? Paygent.client_file_path_for_3d : Paygent.client_file_path
-      c.certpassword    = Paygent.cert_password
-      c.connect_timeout = Paygent.timeout
-      c.verbose         = Paygent.verbose
-      c.ssl_verify_host = false
-      c.multipart_form_post = true
+      c = Curl::Easy.http_post(base_url, *params_fields) do |curl|
+        curl.headers["User-Agent"] = "curl_php"
+        curl.headers["Content-Type"] = "application/x-www-form-urlencoded"
+        curl.headers["charset"] = "Windows-31J"
 
-      c.headers["Content-Type"] = "application/x-www-form-urlencoded"
-      c.headers["charset"] = "Windows-31J"
-      c.headers["User-Agent"] = "curl_php"
+        curl.cacert          = Paygent.ca_file_path
+        curl.cert            = Paygent.client_file_path
+        curl.certpassword    = Paygent.cert_password
+        curl.connect_timeout = Paygent.timeout
+        curl.verbose         = Paygent.verbose
+        curl.ssl_verify_host = false
 
-      c.http_post()
+        curl.follow_location = true
+        curl.enable_cookies = true
+      end
 
       self.response_code = c.response_code
       self.body_str      = convert_str(c.body_str)
       self.header_str    = c.header_str
       self.request       = c
 
-      log("URL: #{url}")
       log("ResponseCode: #{response_code}")
       log("BODY: #{body_str}")
       log("HEAD: #{header_str}\n\n")
