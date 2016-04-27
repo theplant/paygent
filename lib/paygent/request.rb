@@ -52,7 +52,7 @@ module Paygent
     end
     
     def params_fields
-      params.map{|f,k| Curl::PostField.content(f, k) }
+      params.map{|f,k| Curl::PostField.content(f, k) if f.present? && k.present? }
     end
 
 
