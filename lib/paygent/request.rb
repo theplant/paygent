@@ -52,7 +52,7 @@ module Paygent
     end
     
     def params_fields
-      params.map{|f,k| Curl::PostField.content(Curl::Easy.new.escape(f), Curl::Easy.new.escape(k)) }
+      params.map{|f,k| Curl::PostField.content(f, k) }
     end
 
 
