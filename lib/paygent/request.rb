@@ -67,7 +67,7 @@ module Paygent
         curl.headers["charset"] = "Windows-31J"
 
         curl.cacert          = Paygent.ca_file_path
-        curl.cert            = Paygent.client_file_path
+        curl.cert            = params[:force_3d] ? Paygent.client_file_path_for_3d : Paygent.client_file_path
         curl.certpassword    = Paygent.cert_password
         curl.connect_timeout = Paygent.timeout
         curl.verbose         = Paygent.verbose
